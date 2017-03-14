@@ -30,8 +30,10 @@ define([
     "automizyApi/apis/contactTags",
     "automizyApi/apis/unbounceForms",
     "automizyApi/apis/autoDetectedForms",
+    "automizyApi/apis/optimonkForms",
     "automizyApi/apis/invoices",
     "automizyApi/apis/contactsTagManager",
+    "automizyApi/apis/localStorage",
 
     "automizyApi/apis/account",
     "automizyApi/apis/accountStatistics",
