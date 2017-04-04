@@ -3732,6 +3732,43 @@ var $AA = {};
 })();
 
 (function(){
+    var Tokens = function (obj) {
+        var t = this;
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+
+    var p = Tokens.prototype;
+
+    p.create = function(){
+        var t = this;
+        return $.ajax({
+            url: t.url(),
+            type: 'POST',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()}
+        });
+    };
+    p.delete = function(accessToken){
+        var t = this;
+        return $.ajax({
+            url: t.url() + '/' + accessToken,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()}
+        });
+    };
+    
+    $AA.initBasicFunctions(Tokens, "Tokens", {
+        url:'oauth/tokens',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
     var Updates = function (obj) {
         var t = this;
         t.init();
@@ -4147,7 +4184,7 @@ var $AA = {};
 
 (function(){
     $AA.createUrl('account')('account', true);
-    console.log('%c AutomizyJsApi module loaded! ', 'background: #000000; color: #bada55; font-size:14px');
+    //console.log('%c AutomizyJsApi module loaded! ', 'background: #000000; color: #bada55; font-size:14px');
 })();
 window.$AA = $AA;
 window.AutomizyJsApi = $AA;

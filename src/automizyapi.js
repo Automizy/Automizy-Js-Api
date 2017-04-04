@@ -38,6 +38,7 @@ define([
     "automizyApi/apis/account",
     "automizyApi/apis/accountStatistics",
     "automizyApi/apis/clients",
+    "automizyApi/apis/tokens",
     "automizyApi/apis/updates",
     "automizyApi/apis/plugins",
 
@@ -56,5 +57,5 @@ define([
     "automizyApi/functions/runEvents"
 ], function () {
     $AA.createUrl('account')('account', true);
-    console.log('%c AutomizyJsApi module loaded! ', 'background: #000000; color: #bada55; font-size:14px');
+    //console.log('%c AutomizyJsApi module loaded! ', 'background: #000000; color: #bada55; font-size:14px');
 });
