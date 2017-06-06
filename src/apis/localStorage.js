@@ -8,8 +8,8 @@ define([
         var t = this;
         t.d = {
             hasEmbedded: false,
-            defaultKey:'all',
-            defaultGroup:'all'
+            defaultKey:'AUTOMIZY',
+            defaultGroup:'DEFAULT'
         };
         t.init();
 

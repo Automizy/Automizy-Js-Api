@@ -261,6 +261,34 @@ define([
         });
     };
 
+    p.tokenLogin = function (token) {
+        var t = this;
+        token = token || false;
+
+        if (token === false) {
+            t.loginError.apply(t, ['The token must be provide!']);
+            return false;
+        }
+
+        return $.ajax({
+            type:'GET',
+            url:$AA.baseUrl() + '/ping',
+            headers:{Authorization: 'Bearer ' + token},
+            success: function (data, textStatus, jqXHR) {
+                t.set({
+                    access_token:token,
+                    expires_in:14967468700
+                });
+                t.loggedIn(true);
+                t.refreshLoopRestart();
+                t.d.loginAjaxSuccess.apply(t, [data, textStatus, jqXHR]);
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                t.d.loginAjaxError.apply(t, [jqXHR, textStatus, errorThrown]);
+            }
+        });
+    };
+
     p.login = function (obj) {
         var t = this;
         var obj = obj || {};
