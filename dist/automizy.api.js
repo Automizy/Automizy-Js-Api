@@ -1015,7 +1015,10 @@ var $AA = {};
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     converters: {
                         'text json': function (result) {
-                            var res = $.parseJSON(result)._embedded;
+                            var res = $.parseJSON(result);
+                            if(typeof res._embedded !== 'undefined'){
+                                res = res._embedded;
+                            }
                             res = res[Object.keys(res)[0]];
                             var arr = [];
                             for (var i in res) {
@@ -3189,6 +3192,28 @@ var $AA = {};
 })();
 
 (function(){
+    var Forms = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+
+    var p = Forms.prototype;
+
+    
+    $AA.initBasicFunctions(Forms, "Forms2", {
+        url:'v2/forms',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
     var Automations = function (obj) {
         var t = this;
         t.d = {
@@ -3973,15 +3998,19 @@ var $AA = {};
             table.totalEntries(data.total_items);
             table.writeEntries();
 
-
+            var records;
             if(apiItemsDir !== false){
                 var dir = apiItemsDir.split('/');
-                var records = data;
+                records = data;
                 for(var i = 0; i < dir.length; i++){
                     records = records[dir[i]];
                 }
             }else{
-                var records = data['_embedded'][apiName];
+                if(typeof data['_embedded'] === 'undefined'){
+                    records = data[apiName];
+                }else{
+                    records = data['_embedded'][apiName];
+                }
             }
 
             var length = records.length;

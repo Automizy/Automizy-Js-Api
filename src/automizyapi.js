@@ -22,6 +22,7 @@ define([
     "automizyApi/apis/webhooks",
     "automizyApi/apis/templates",
     "automizyApi/apis/forms",
+    "automizyApi/apis/v2/forms",
     "automizyApi/apis/automations",
     "automizyApi/apis/contactImports",
     "automizyApi/apis/tags",

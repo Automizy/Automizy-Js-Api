@@ -100,15 +100,19 @@ define([
             table.totalEntries(data.total_items);
             table.writeEntries();
 
-
+            var records;
             if(apiItemsDir !== false){
                 var dir = apiItemsDir.split('/');
-                var records = data;
+                records = data;
                 for(var i = 0; i < dir.length; i++){
                     records = records[dir[i]];
                 }
             }else{
-                var records = data['_embedded'][apiName];
+                if(typeof data['_embedded'] === 'undefined'){
+                    records = data[apiName];
+                }else{
+                    records = data['_embedded'][apiName];
+                }
             }
 
             var length = records.length;

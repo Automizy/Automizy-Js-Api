@@ -464,7 +464,10 @@ define([
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     converters: {
                         'text json': function (result) {
-                            var res = $.parseJSON(result)._embedded;
+                            var res = $.parseJSON(result);
+                            if(typeof res._embedded !== 'undefined'){
+                                res = res._embedded;
+                            }
                             res = res[Object.keys(res)[0]];
                             var arr = [];
                             for (var i in res) {
