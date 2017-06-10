@@ -833,27 +833,34 @@ var $AA = {};
                 return t.d.xhr.export;
             };
 
-        p.insert = p.insert || function (obj, async) {
+        p.insert = p.insert || function (obj, async, json) {
                 $AA.xhr[moduleNameLowerFirst + 'Modified'] = true;
                 $AA.xhr[moduleNameLowerFirst + 'GetAfterFirstModified'] = true;
                 var t = this;
+                json = json || false;
                 if (typeof async !== 'undefined') {
                     async = $AA.parseBoolean(async);
                 } else {
-                    var async = true;
+                    async = true;
                 }
 
-                var data = obj;
-
-                t.d.xhr.insert = $.ajax({
+                var ajaxData = {
                     url: $AA[moduleNameLowerFirst + 'Url']() + t.d.urlSuffix,
                     type: 'POST',
                     dataType: 'json',
                     async: async,
-                    data: data,
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     error: $AA.token().error()
-                });
+                };
+
+                var data = obj;
+                if (json) {
+                    data = JSON.stringify(data);
+                    ajaxData.contentType = 'application/json';
+                }
+                ajaxData.data = data;
+
+                t.d.xhr.insert = $.ajax(ajaxData);
                 $AA.runEvents('insert', t, [t, moduleNameLowerFirst]);
                 if (!async) {
                     return t.d.xhr.insert.responseJSON;
@@ -861,8 +868,12 @@ var $AA = {};
                 return t.d.xhr.insert;
             };
         p.insertSync = p.insertSync || function (obj) {
-                var obj = obj || false;
+                obj = obj || false;
                 return this.insert.apply(this, [obj, false]);
+            };
+        p.insertJson = p.insertJson || function (obj) {
+                var obj = obj || false;
+                return this.insert.apply(this, [obj, true, true]);
             };
 
         p.update = p.update || function (obj, id, async) {
@@ -1016,7 +1027,7 @@ var $AA = {};
                     converters: {
                         'text json': function (result) {
                             var res = $.parseJSON(result);
-                            if(typeof res._embedded !== 'undefined'){
+                            if (typeof res._embedded !== 'undefined') {
                                 res = res._embedded;
                             }
                             res = res[Object.keys(res)[0]];
