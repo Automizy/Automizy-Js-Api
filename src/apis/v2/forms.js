@@ -17,6 +17,17 @@ define([
 
     var p = Forms.prototype;
 
+
+    p.getPageById = function(formId){
+        var t = this;
+        return $.ajax({
+            url: $AA.forms2Url() + '/automizy/pages/'+formId,
+            type: 'GET',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
     
     $AA.initBasicFunctions(Forms, "Forms2", {
         url:'v2/forms',

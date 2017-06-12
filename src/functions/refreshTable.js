@@ -95,9 +95,9 @@ define([
         table.d.$checkboxCheckAll.prop('checked', false).change();
         table.loading();
         var xhr = $AA[apiName]().links('').fields(fields).limit(limit).page(page).where(where).orderBy(orderBy).orderDir(orderDir).urlSuffix(apiUrlSuffix).format(apiFormat).get().done(function (data) {
-            table.pageMax(data.page_count);
+            table.pageMax(data.page_count || data.pageCount || 0);
 
-            table.totalEntries(data.total_items);
+            table.totalEntries(data.total_items || data.totalItems || 0);
             table.writeEntries();
 
             var records;

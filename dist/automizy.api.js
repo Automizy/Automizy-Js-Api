@@ -876,29 +876,36 @@ var $AA = {};
                 return this.insert.apply(this, [obj, true, true]);
             };
 
-        p.update = p.update || function (obj, id, async) {
+        p.update = p.update || function (obj, id, async, json) {
                 $AA.xhr[moduleNameLowerFirst + 'Modified'] = true;
                 $AA.xhr[moduleNameLowerFirst + 'GetAfterFirstModified'] = true;
                 var t = this;
+                json = json || false;
                 if (typeof async !== 'undefined') {
                     async = $AA.parseBoolean(async);
                 } else {
                     var async = true;
                 }
 
-                var data = obj;
-                var id = id || obj.id || 0;
-                delete data.id;
-
-                t.d.xhr.update = $.ajax({
+                var ajaxData = {
                     url: $AA[moduleNameLowerFirst + 'Url']() + '/' + id + t.d.urlSuffix,
                     type: 'PATCH',
                     dataType: 'json',
                     async: async,
-                    data: data,
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     error: $AA.token().error()
-                });
+                };
+
+                var data = obj;
+                if (json) {
+                    data = JSON.stringify(data);
+                    ajaxData.contentType = 'application/json';
+                }
+                var id = id || obj.id || 0;
+                delete data.id;
+                ajaxData.data = data;
+
+                t.d.xhr.update = $.ajax(ajaxData);
                 if (!async) {
                     return t.d.xhr.update.responseJSON;
                 }
@@ -908,6 +915,11 @@ var $AA = {};
                 var obj = obj || false;
                 var id = id || false;
                 return this.update.apply(this, [obj, id, false]);
+            };
+        p.updateJson = p.updateJson || function (obj, id) {
+                var obj = obj || false;
+                var id = id || false;
+                return this.update.apply(this, [obj, id, true, true]);
             };
 
         p.delete = p.delete || function (id, async) {
@@ -3203,28 +3215,6 @@ var $AA = {};
 })();
 
 (function(){
-    var Forms = function (obj) {
-        var t = this;
-        t.d = {
-            hasEmbedded:false
-        };
-        t.init();
-
-        t.initParameter(obj || {});
-    };
-
-
-    var p = Forms.prototype;
-
-    
-    $AA.initBasicFunctions(Forms, "Forms2", {
-        url:'v2/forms',
-        useBaseUrl:true
-    });
-
-})();
-
-(function(){
     var Automations = function (obj) {
         var t = this;
         t.d = {
@@ -3868,6 +3858,61 @@ var $AA = {};
 })();
 
 (function(){
+    var Forms = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+
+    var p = Forms.prototype;
+
+
+    p.getPageById = function(formId){
+        var t = this;
+        return $.ajax({
+            url: $AA.forms2Url() + '/automizy/pages/'+formId,
+            type: 'GET',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+    
+    $AA.initBasicFunctions(Forms, "Forms2", {
+        url:'v2/forms',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
+    var Emails = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+
+    var p = Emails.prototype;
+
+    
+    $AA.initBasicFunctions(Emails, "Emails", {
+        url:'v2/emails',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
     $AA.parseBoolean = function (value, nullOnFailure) {
         if (typeof value === 'string')
             value = value.toLowerCase();
@@ -4004,9 +4049,9 @@ var $AA = {};
         table.d.$checkboxCheckAll.prop('checked', false).change();
         table.loading();
         var xhr = $AA[apiName]().links('').fields(fields).limit(limit).page(page).where(where).orderBy(orderBy).orderDir(orderDir).urlSuffix(apiUrlSuffix).format(apiFormat).get().done(function (data) {
-            table.pageMax(data.page_count);
+            table.pageMax(data.page_count || data.pageCount || 0);
 
-            table.totalEntries(data.total_items);
+            table.totalEntries(data.total_items || data.totalItems || 0);
             table.writeEntries();
 
             var records;

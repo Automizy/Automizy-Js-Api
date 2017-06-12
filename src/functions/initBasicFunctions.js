@@ -325,29 +325,36 @@ define([
                 return this.insert.apply(this, [obj, true, true]);
             };
 
-        p.update = p.update || function (obj, id, async) {
+        p.update = p.update || function (obj, id, async, json) {
                 $AA.xhr[moduleNameLowerFirst + 'Modified'] = true;
                 $AA.xhr[moduleNameLowerFirst + 'GetAfterFirstModified'] = true;
                 var t = this;
+                json = json || false;
                 if (typeof async !== 'undefined') {
                     async = $AA.parseBoolean(async);
                 } else {
                     var async = true;
                 }
 
-                var data = obj;
-                var id = id || obj.id || 0;
-                delete data.id;
-
-                t.d.xhr.update = $.ajax({
+                var ajaxData = {
                     url: $AA[moduleNameLowerFirst + 'Url']() + '/' + id + t.d.urlSuffix,
                     type: 'PATCH',
                     dataType: 'json',
                     async: async,
-                    data: data,
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     error: $AA.token().error()
-                });
+                };
+
+                var data = obj;
+                if (json) {
+                    data = JSON.stringify(data);
+                    ajaxData.contentType = 'application/json';
+                }
+                var id = id || obj.id || 0;
+                delete data.id;
+                ajaxData.data = data;
+
+                t.d.xhr.update = $.ajax(ajaxData);
                 if (!async) {
                     return t.d.xhr.update.responseJSON;
                 }
@@ -357,6 +364,11 @@ define([
                 var obj = obj || false;
                 var id = id || false;
                 return this.update.apply(this, [obj, id, false]);
+            };
+        p.updateJson = p.updateJson || function (obj, id) {
+                var obj = obj || false;
+                var id = id || false;
+                return this.update.apply(this, [obj, id, true, true]);
             };
 
         p.delete = p.delete || function (id, async) {
