@@ -336,6 +336,8 @@ define([
                     var async = true;
                 }
 
+                var id = id || obj.id || 0;
+
                 var ajaxData = {
                     url: $AA[moduleNameLowerFirst + 'Url']() + '/' + id + t.d.urlSuffix,
                     type: 'PATCH',
@@ -346,12 +348,11 @@ define([
                 };
 
                 var data = obj;
+                delete data.id;
                 if (json) {
                     data = JSON.stringify(data);
                     ajaxData.contentType = 'application/json';
                 }
-                var id = id || obj.id || 0;
-                delete data.id;
                 ajaxData.data = data;
 
                 t.d.xhr.update = $.ajax(ajaxData);
@@ -653,10 +654,15 @@ define([
             $AA.xhr[moduleNameLowerFirst] = newModule.limit(2147483648).get().done(function (data) {
                 $AA.xhr[moduleNameLowerFirst + 'FirstRunCompleted'] = true;
                 $AA.xhr[moduleNameLowerFirst + 'Running'] = false;
-                if (newModule.d.hasEmbedded) {
-                    var arr = data._embedded[newModule.d.parentName];
-                } else {
-                    var arr = data;
+                var arr;
+                if(Array.isArray(data)){
+                    arr = data;
+                }else {
+                    if (newModule.d.hasEmbedded) {
+                        arr = data._embedded[newModule.d.parentName];
+                    } else {
+                        arr = data[newModule.d.parentName];
+                    }
                 }
 
                 for (var i = 0; i < arr.length; i++) {

@@ -7,7 +7,7 @@ define([
     var ContactsTagManager = function (obj) {
         var t = this;
         t.d = {
-            hasEmbedded:false,
+            hasEmbedded:true,
             hasId:false
         };
         t.init();

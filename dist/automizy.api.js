@@ -887,6 +887,8 @@ var $AA = {};
                     var async = true;
                 }
 
+                var id = id || obj.id || 0;
+
                 var ajaxData = {
                     url: $AA[moduleNameLowerFirst + 'Url']() + '/' + id + t.d.urlSuffix,
                     type: 'PATCH',
@@ -897,12 +899,11 @@ var $AA = {};
                 };
 
                 var data = obj;
+                delete data.id;
                 if (json) {
                     data = JSON.stringify(data);
                     ajaxData.contentType = 'application/json';
                 }
-                var id = id || obj.id || 0;
-                delete data.id;
                 ajaxData.data = data;
 
                 t.d.xhr.update = $.ajax(ajaxData);
@@ -1204,10 +1205,15 @@ var $AA = {};
             $AA.xhr[moduleNameLowerFirst] = newModule.limit(2147483648).get().done(function (data) {
                 $AA.xhr[moduleNameLowerFirst + 'FirstRunCompleted'] = true;
                 $AA.xhr[moduleNameLowerFirst + 'Running'] = false;
-                if (newModule.d.hasEmbedded) {
-                    var arr = data._embedded[newModule.d.parentName];
-                } else {
-                    var arr = data;
+                var arr;
+                if(Array.isArray(data)){
+                    arr = data;
+                }else {
+                    if (newModule.d.hasEmbedded) {
+                        arr = data._embedded[newModule.d.parentName];
+                    } else {
+                        arr = data[newModule.d.parentName];
+                    }
                 }
 
                 for (var i = 0; i < arr.length; i++) {
@@ -3563,7 +3569,7 @@ var $AA = {};
     var ContactsTagManager = function (obj) {
         var t = this;
         t.d = {
-            hasEmbedded:false,
+            hasEmbedded:true,
             hasId:false
         };
         t.init();
@@ -3586,8 +3592,8 @@ var $AA = {};
         var t = this;
         t.d = {
             hasEmbedded: false,
-            defaultKey:'AUTOMIZY',
-            defaultGroup:'DEFAULT'
+            defaultKey: 'AUTOMIZY',
+            defaultGroup: 'DEFAULT'
         };
         t.init();
 
@@ -3597,10 +3603,17 @@ var $AA = {};
 
     var p = LocalStorage.prototype;
 
-
     p.get = function () {
         var t = this;
-        return t.getValuesByGroupAndKey(t.d.defaultGroup, t.d.defaultKey);
+
+        if (arguments.length < 1) {
+            return t.getAll();
+        } else if (arguments.length === 1) {
+            return t.getValuesByGroup(arguments[0]);
+        }
+
+        return t.getValuesByGroupAndKey(arguments[0], arguments[1]);
+
     };
     p.getAll = function () {
         var t = this;
@@ -3621,7 +3634,7 @@ var $AA = {};
             converters: {
                 'text json': function (result) {
                     var res = $.parseJSON(result);
-                    if(typeof res[group] === 'undefined'){
+                    if (typeof res[group] === 'undefined') {
                         return null;
                     }
                     return res[group];
@@ -3650,7 +3663,7 @@ var $AA = {};
             converters: {
                 'text json': function (result) {
                     var res = $.parseJSON(result);
-                    if(typeof res[group] === 'undefined' || typeof res[group][key] === 'undefined'){
+                    if (typeof res[group] === 'undefined' || typeof res[group][key] === 'undefined') {
                         return null;
                     }
                     return res[group][key];
@@ -3660,27 +3673,32 @@ var $AA = {};
             error: $AA.token().error()
         });
     };
-    p.insert = function (value, key, group) {
+    p.insert = function () {
         var t = this;
+        var url = '';
+        var data = {};
 
-        if(typeof value === 'undefined' || value === null){
+        if (arguments.length < 1) {
             return;
+        } else if (arguments.length === 1) {
+            url = t.url() + '/' + t.d.defaultGroup + '/' + t.d.defaultKey;
+            data = {
+                value: arguments[0]
+            }
+        } else if (arguments.length === 2) {
+            url = t.url() + '/' + arguments[0];
+            data = {
+                value: arguments[1]
+            };
+        } else {
+            url = t.url() + '/' + arguments[0] + '/' + arguments[1];
+            data = {
+                value: arguments[2]
+            }
         }
-
-        if(typeof value === 'array' || typeof value === 'object'){
-            key = value.key || t.d.defaultKey;
-            group = value.group || t.d.defaultGroup;
-        }else{
-            key = key || t.d.defaultKey;
-            group = group || t.d.defaultGroup;
-        }
-
-        data = {
-            'value':value
-        };
 
         t.d.xhr.insert = $.ajax({
-            url: t.url() + '/' + group + '/' + key,
+            url: url,
             type: 'POST',
             dataType: 'json',
             data: data,
@@ -3861,7 +3879,8 @@ var $AA = {};
     var Forms = function (obj) {
         var t = this;
         t.d = {
-            hasEmbedded:false
+            hasEmbedded:false,
+            parentName:'forms'
         };
         t.init();
 

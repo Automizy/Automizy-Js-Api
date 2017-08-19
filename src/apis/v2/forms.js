@@ -7,7 +7,8 @@ define([
     var Forms = function (obj) {
         var t = this;
         t.d = {
-            hasEmbedded:false
+            hasEmbedded:false,
+            parentName:'forms'
         };
         t.init();
 
