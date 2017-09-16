@@ -15,9 +15,7 @@ define([
         t.initParameter(obj || {});
     };
 
-
     var p = Forms.prototype;
-
 
     p.getPageById = function(formId){
         var t = this;

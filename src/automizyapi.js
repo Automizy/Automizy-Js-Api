@@ -45,6 +45,8 @@ define([
 
     "automizyApi/apis/v2/forms",
     "automizyApi/apis/v2/emails",
+    "automizyApi/apis/v2/campaigns",
+    "automizyApi/apis/v2/templates",
 
     "automizyApi/functions/initBasicFunctions",
     "automizyApi/functions/parseBoolean",
