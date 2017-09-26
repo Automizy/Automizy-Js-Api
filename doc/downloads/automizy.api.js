@@ -3978,16 +3978,29 @@ var $AA = {};
             error: $AA.token().error()
         });
     };
-    p.getHtmlCodeById = function(id){
+    p.duplicate = function(id){
         var t = this;
         return $.ajax({
-            url: t.url() + '/' + id + t.d.urlSuffix,
+            url: t.url() + '/' + id + '/send' + t.d.urlSuffix,
+            type: 'POST',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+    p.getImages = function(id){
+        var t = this;
+        id = id || false;
+        var url = t.url() + '/fileManager' + t.d.urlSuffix;
+        if(id !== false){
+            url = t.url() + '/' + id + '/fileManager' + t.d.urlSuffix;
+        }
+        return $.ajax({
+            url: url,
             type: 'GET',
             dataType: 'json',
-            data:{
-                fields:['code.html']
-            },
             headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            data: {where: [['extension', 'in', ['png', 'jpg', 'jpeg', 'gif', 'bmp']]]},
             error: $AA.token().error()
         });
     };
