@@ -309,7 +309,9 @@ define([
                 }
                 ajaxData.data = data;
 
-                t.d.xhr.insert = $.ajax(ajaxData);
+                t.d.xhr.insert = $.ajax(ajaxData).done(function(){
+                    $AA.records.refresh();
+                });
                 $AA.runEvents('insert', t, [t, moduleNameLowerFirst]);
                 if (!async) {
                     return t.d.xhr.insert.responseJSON;
@@ -389,6 +391,8 @@ define([
                     async: async,
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     error: $AA.token().error()
+                }).done(function(){
+                    $AA.records.refresh();
                 });
                 if (!async) {
                     return t.d.xhr.delete.responseJSON;

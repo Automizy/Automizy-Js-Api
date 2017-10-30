@@ -4,21 +4,21 @@ define([
     'automizyApi/functions/initBasicFunctions',
     'automizyApi/token'
 ], function () {
-    var ContactTags = function (obj) {
+    var CustomFields2 = function (obj) {
         var t = this;
         t.d = {
             hasEmbedded:false,
-            hasId:false
+            parentName:'customFields'
         };
         t.init();
 
         t.initParameter(obj || {});
     };
 
-    var p = ContactTags.prototype;
+    var p = CustomFields2.prototype;
     
-    $AA.initBasicFunctions(ContactTags, "ContactTags", {
-        url:'contacts/tags',
+    $AA.initBasicFunctions(CustomFields2, "CustomFields2", {
+        url:'v2/custom-fields',
         useBaseUrl:true
     });
 

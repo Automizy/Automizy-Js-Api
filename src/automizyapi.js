@@ -47,6 +47,9 @@ define([
     "automizyApi/apis/v2/emails",
     "automizyApi/apis/v2/campaigns",
     "automizyApi/apis/v2/templates",
+    "automizyApi/apis/v2/automations",
+    "automizyApi/apis/v2/contactTags",
+    "automizyApi/apis/v2/customFields",
 
     "automizyApi/functions/initBasicFunctions",
     "automizyApi/functions/parseBoolean",
@@ -60,7 +63,9 @@ define([
     "automizyApi/functions/urlManager",
     "automizyApi/functions/downloadContent",
     "automizyApi/functions/addEvent",
-    "automizyApi/functions/runEvents"
+    "automizyApi/functions/runEvents",
+
+    "automizyApi/modules/records"
 ], function () {
     $AA.createUrl('account')('account', true);
     //console.log('%c AutomizyJsApi module loaded! ', 'background: #000000; color: #bada55; font-size:14px');

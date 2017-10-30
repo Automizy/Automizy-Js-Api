@@ -860,7 +860,9 @@ var $AA = {};
                 }
                 ajaxData.data = data;
 
-                t.d.xhr.insert = $.ajax(ajaxData);
+                t.d.xhr.insert = $.ajax(ajaxData).done(function(){
+                    $AA.records.refresh();
+                });
                 $AA.runEvents('insert', t, [t, moduleNameLowerFirst]);
                 if (!async) {
                     return t.d.xhr.insert.responseJSON;
@@ -940,6 +942,8 @@ var $AA = {};
                     async: async,
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     error: $AA.token().error()
+                }).done(function(){
+                    $AA.records.refresh();
                 });
                 if (!async) {
                     return t.d.xhr.delete.responseJSON;
@@ -3471,7 +3475,6 @@ var $AA = {};
         t.initParameter(obj || {});
     };
 
-
     var p = ContactTags.prototype;
     
     $AA.initBasicFunctions(ContactTags, "ContactTags", {
@@ -4076,6 +4079,124 @@ var $AA = {};
 })();
 
 (function(){
+    var Automations = function (obj) {
+        var t = this;
+        t.d = {
+            xhr:{},
+            hasEmbedded:false,
+            parentName:'automations'
+        };
+        t.init();
+        t.d.xhr.getNodesById = false;
+        t.d.xhr.acceptDraft = false;
+        t.d.xhr.discardDraft = false;
+
+        t.initParameter(obj || {});
+    };
+
+
+    var p = Automations.prototype;
+
+    p.getNodesById = function(automationId){
+        var t = this;
+        t.d.xhr.getNodesById = $.ajax({
+            url: $AA.automations2Url() + '/' + automationId + '/nodes',
+            type: 'GET',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+        return t.d.xhr.getNodesById;
+    };
+    /*
+    p.acceptDraft = function(automationId){
+        var t = this;
+        t.d.xhr.acceptDraft = $.ajax({
+            url: $AA.automations2Url() + '/' + automationId + '/accept-draft',
+            type: 'POST',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+        return t.d.xhr.acceptDraft;
+    };
+    */
+    p.discardDraft = function(automationId){
+        var t = this;
+        t.d.xhr.discardDraft = $.ajax({
+            url: $AA.automations2Url() + '/' + automationId + '/nodes',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+        return t.d.xhr.discardDraft;
+    };
+    p.updateNodes = function(nodesJson, automationId){
+        var t = this;
+        t.d.xhr.discardDraft = $.ajax({
+            url: $AA.automations2Url() + '/' + automationId + '/nodes',
+            type: 'POST',
+            dataType: 'json',
+            data:{
+                nodes:nodesJson
+            },
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+        return t.d.xhr.discardDraft;
+    };
+
+    $AA.initBasicFunctions(Automations, "Automations2", {
+        url:'v2/automations',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
+    var ContactTags = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false,
+            parentName:'contactTags'
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+    var p = ContactTags.prototype;
+
+    $AA.initBasicFunctions(ContactTags, "ContactTags", {
+        url:'v2/contacts/tag-manager',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
+    var CustomFields2 = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false,
+            parentName:'customFields'
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+    var p = CustomFields2.prototype;
+    
+    $AA.initBasicFunctions(CustomFields2, "CustomFields2", {
+        url:'v2/custom-fields',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
     $AA.parseBoolean = function (value, nullOnFailure) {
         if (typeof value === 'string')
             value = value.toLowerCase();
@@ -4456,6 +4577,65 @@ var $AA = {};
         }
         return $AA;
     };
+})();
+
+(function(){
+    var Records = function (obj) {
+        var t = this;
+        t.d = {};
+        t.d.xhr = false;
+        t.d.hasRecords = {}
+    };
+
+    var p = Records.prototype;
+
+    p.hasRecords = function(name){
+        var t = this;
+        if(typeof t.d.hasRecords[name] === 'undefined'){
+            return true;
+        }
+        return t.d.hasRecords[name];
+    };
+    p.refresh = function(){
+        var t = this;
+        return $.ajax({
+            url: $AA.recordsUrl(),
+            type: 'GET',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()}
+        }).done(function(data){
+            for(var i in data){
+                t.d.hasRecords[i] = $AA.parseBoolean(data[i]);
+            }
+        });
+    };
+    p.refreshOne = function(name){
+        var t = this;
+        return $.ajax({
+            url: $AA.recordsUrl(),
+            type: 'GET',
+            dataType: 'json',
+            data:{
+                fields:[name]
+            },
+            headers: {Authorization: 'Bearer ' + $AA.token().get()}
+        }).done(function(data){
+            for(var i in data){
+                t.d.hasRecords[i] = $AA.parseBoolean(data[i]);
+            }
+        });
+    };
+
+    $AA.createUrl('records')('v2/resource-availability', true);
+    $AA.m['Records'] = Records;
+    /*
+    $AA['records'] = function (obj) {
+        var t = new Records(obj);
+        return t;
+    };
+    */
+    $AA['records'] = new Records();
+
 })();
 
 (function(){

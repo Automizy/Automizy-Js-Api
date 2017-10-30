@@ -8,7 +8,7 @@ define([
         var t = this;
         t.d = {
             hasEmbedded:false,
-            hasId:false
+            parentName:'contactTags'
         };
         t.init();
 
@@ -16,9 +16,9 @@ define([
     };
 
     var p = ContactTags.prototype;
-    
+
     $AA.initBasicFunctions(ContactTags, "ContactTags", {
-        url:'contacts/tags',
+        url:'v2/contacts/tag-manager',
         useBaseUrl:true
     });
 
