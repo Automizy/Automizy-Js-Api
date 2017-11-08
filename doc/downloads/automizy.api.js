@@ -4589,8 +4589,12 @@ var $AA = {};
 
     var p = Records.prototype;
 
-    p.hasRecords = function(name){
+    p.hasRecords = function(name, value){
         var t = this;
+        if(typeof value !== 'undefined'){
+            t.d.hasRecords[name] = value;
+            return t;
+        }
         if(typeof t.d.hasRecords[name] === 'undefined'){
             return true;
         }
