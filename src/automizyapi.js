@@ -50,6 +50,7 @@ define([
     "automizyApi/apis/v2/automations",
     "automizyApi/apis/v2/contactTags",
     "automizyApi/apis/v2/customFields",
+    "automizyApi/apis/v2/automationCampaigns",
 
     "automizyApi/functions/initBasicFunctions",
     "automizyApi/functions/parseBoolean",
