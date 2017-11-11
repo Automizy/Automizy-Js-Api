@@ -51,6 +51,7 @@ define([
     "automizyApi/apis/v2/contactTags",
     "automizyApi/apis/v2/customFields",
     "automizyApi/apis/v2/automationCampaigns",
+    "automizyApi/apis/v2/bulkCampaigns",
 
     "automizyApi/functions/initBasicFunctions",
     "automizyApi/functions/parseBoolean",

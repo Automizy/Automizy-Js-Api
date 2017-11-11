@@ -41,15 +41,42 @@ define([
             error: $AA.token().error()
         });
     };
-    p.duplicate = function(id){
+    p.duplicate = function(id, type){
         var t = this;
-        return $.ajax({
-            url: t.url() + '/' + id + '/send' + t.d.urlSuffix,
-            type: 'POST',
-            dataType: 'json',
-            headers: {Authorization: 'Bearer ' + $AA.token().get()},
-            error: $AA.token().error()
+        var deferred = $.Deferred();
+
+        t.getRecordById(id).done(function(campaign){
+            var xhr;
+            var newCampaign = {
+                attachments:campaign.attachments || null,
+                code:campaign.code || {editor:'', html:''},
+                embedImages:campaign.embedImages || false,
+                name:campaign.name || '',
+                notificationEmail:campaign.notificationEmail || null,
+                reply:campaign.reply || {email:'help@automizy.com'},
+                sender:campaign.sender || {email:'help@automizy.com', name:''},
+                subject:campaign.subject || '',
+                type:type || campaign.type || 'BULK'
+            };
+            if(newCampaign.type === 'AUTOMATION'){
+                newCampaign.automation = {
+                    id:campaign.automation.id || 0
+                };
+                xhr = $AA.automationCampaigns().insert(newCampaign).done(function(data){
+                    $AA.xhr.campaigns2Modified = true;
+                    $AA.xhr.campaigns2GetAfterFirstModified = true;
+                    deferred.resolveWith(xhr, [data]);
+                })
+            }else{
+                xhr = $AA.bulkCampaigns().insert(newCampaign).done(function(data){
+                    $AA.xhr.campaigns2Modified = true;
+                    $AA.xhr.campaigns2GetAfterFirstModified = true;
+                    deferred.resolveWith(xhr, [data]);
+                })
+            }
         });
+
+        return deferred;
     };
     p.getImages = function(id){
         var t = this;
