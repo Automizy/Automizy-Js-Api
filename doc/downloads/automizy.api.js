@@ -3981,7 +3981,7 @@ var $AA = {};
             error: $AA.token().error()
         });
     };
-    p.duplicate = function(id, type){
+    p.duplicate = function(id, type, automationId){
         var t = this;
         var deferred = $.Deferred();
 
@@ -3999,8 +3999,9 @@ var $AA = {};
                 type:type || campaign.type || 'BULK'
             };
             if(newCampaign.type === 'AUTOMATION'){
+                campaign.automation = campaign.automation || {};
                 newCampaign.automation = {
-                    id:campaign.automation.id || 0
+                    id:automationId || campaign.automation.id || 0
                 };
                 xhr = $AA.automationCampaigns().insert(newCampaign).done(function(data){
                     $AA.xhr.campaigns2Modified = true;
@@ -4017,6 +4018,17 @@ var $AA = {};
         });
 
         return deferred;
+    };
+    p.getAllByPriorizedAutomation = function(automationId){
+        var t = this;
+        return $.ajax({
+            url: t.url() + t.d.urlSuffix,
+            type: 'GET',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            data: {prioritizedAutomation:automationId},
+            error: $AA.token().error()
+        });
     };
     p.getImages = function(id){
         var t = this;
