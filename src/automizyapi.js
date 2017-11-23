@@ -52,6 +52,7 @@ define([
     "automizyApi/apis/v2/customFields",
     "automizyApi/apis/v2/automationCampaigns",
     "automizyApi/apis/v2/bulkCampaigns",
+    "automizyApi/apis/v2/segments",
 
     "automizyApi/functions/initBasicFunctions",
     "automizyApi/functions/parseBoolean",

@@ -90,7 +90,7 @@ define([
             error: $AA.token().error()
         });
     };
-    p.getImages = function(id){
+    p.getImages = function(id, limit){
         var t = this;
         id = id || false;
         var url = t.url() + '/fileManager' + t.d.urlSuffix;
@@ -102,7 +102,11 @@ define([
             type: 'GET',
             dataType: 'json',
             headers: {Authorization: 'Bearer ' + $AA.token().get()},
-            data: {where: [['extension', 'in', ['png', 'jpg', 'jpeg', 'gif', 'bmp']]]},
+            data: {
+                where: [['extension', 'in', ['png', 'jpg', 'jpeg', 'gif', 'bmp']]],
+                limit:limit || 100,
+                order:'uploadedAt:desc'
+            },
             error: $AA.token().error()
         });
     };
