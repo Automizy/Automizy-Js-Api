@@ -4133,6 +4133,9 @@ var $AA = {};
         t.d.xhr.getNodesById = false;
         t.d.xhr.acceptDraft = false;
         t.d.xhr.discardDraft = false;
+        t.d.xhr.updateNodes = false;
+        t.d.xhr.activate = false;
+        t.d.xhr.inactivate = false;
 
         t.initParameter(obj || {});
     };
@@ -4177,7 +4180,7 @@ var $AA = {};
     };
     p.updateNodes = function(nodesJson, automationId){
         var t = this;
-        t.d.xhr.discardDraft = $.ajax({
+        t.d.xhr.updateNodes = $.ajax({
             url: $AA.automations2Url() + '/' + automationId + '/nodes',
             type: 'POST',
             dataType: 'json',
@@ -4187,7 +4190,29 @@ var $AA = {};
             headers: {Authorization: 'Bearer ' + $AA.token().get()},
             error: $AA.token().error()
         });
-        return t.d.xhr.discardDraft;
+        return t.d.xhr.updateNodes;
+    };
+    p.activate = function(automationId){
+        var t = this;
+        t.d.xhr.activate = $.ajax({
+            url: $AA.automations2Url() + '/' + automationId + '/activate',
+            type: 'POST',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+        return t.d.xhr.activate;
+    };
+    p.inactivate = function(automationId){
+        var t = this;
+        t.d.xhr.inactivate = $.ajax({
+            url: $AA.automations2Url() + '/' + automationId + '/inactivate',
+            type: 'POST',
+            dataType: 'json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+        return t.d.xhr.inactivate;
     };
 
     $AA.initBasicFunctions(Automations, "Automations2", {
