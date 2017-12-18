@@ -3911,6 +3911,48 @@ var $AA = {};
 })();
 
 (function(){
+    var UnbounceForms = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false,
+            parentName:'forms'
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+    var p = UnbounceForms.prototype;
+    
+    $AA.initBasicFunctions(UnbounceForms, "UnbounceForms2", {
+        url:'v2/forms/unbounce',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
+    var OptimonkForms = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false,
+            parentName:'forms'
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+    var p = OptimonkForms.prototype;
+    
+    $AA.initBasicFunctions(OptimonkForms, "OptimonkForms2", {
+        url:'v2/forms/optimonk',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
     var Emails = function (obj) {
         var t = this;
         t.d = {

@@ -44,6 +44,8 @@ define([
 
 
     "automizyApi/apis/v2/forms",
+    "automizyApi/apis/v2/unbounceForms",
+    "automizyApi/apis/v2/optimonkForms",
     "automizyApi/apis/v2/emails",
     "automizyApi/apis/v2/campaigns",
     "automizyApi/apis/v2/templates",
