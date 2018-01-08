@@ -4530,6 +4530,19 @@ var $AA = {};
         });
     };
 
+    p.getContactById = function(smartListId, contactId){
+        var t = this;
+        var data = {};
+        return $.ajax({
+            url: t.url() + '/'+smartListId+'/contacts/' + contactId,
+            type: 'GET',
+            dataType: 'json',
+            data:data,
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+
     p.getPermanentlyRemovedCount = function(smartListId, contactIds, selectorType, searchFor, filter){
         var t = this;
         smartListId = smartListId || false;
