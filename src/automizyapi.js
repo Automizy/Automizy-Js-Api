@@ -55,6 +55,7 @@ define([
     "automizyApi/apis/v2/automationCampaigns",
     "automizyApi/apis/v2/bulkCampaigns",
     "automizyApi/apis/v2/segments",
+    "automizyApi/apis/v2/smartLists",
 
     "automizyApi/functions/initBasicFunctions",
     "automizyApi/functions/parseBoolean",

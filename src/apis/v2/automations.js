@@ -36,6 +36,31 @@ define([
         });
         return t.d.xhr.getNodesById;
     };
+    p.getNodeContacts = function(automationId, nodeId, limit, page, searchFor){
+        var t = this;
+        limit = limit || false;
+        page = page || false;
+        searchFor = searchFor || false;
+        var data = {};
+        if(limit !== false){
+            data.limit = limit;
+        }
+        if(page !== false){
+            data.page = page;
+        }
+        if(searchFor !== false){
+            data.searchFor = searchFor;
+        }
+        return $.ajax({
+            url: t.url() + '/' + automationId + '/nodes/' + nodeId + '/contacts',
+            type: 'GET',
+            dataType: 'json',
+            data:data,
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+
     /*
     p.acceptDraft = function(automationId){
         var t = this;

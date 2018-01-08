@@ -603,6 +603,9 @@ var $AA = {};
                 if (typeof t.d.limit === 'undefined') {
                     t.d.limit = false;
                 }
+                if (typeof t.d.searchFor === 'undefined') {
+                    t.d.searchFor = false;
+                }
                 if (typeof t.d.page === 'undefined') {
                     t.d.page = false;
                 }
@@ -645,6 +648,9 @@ var $AA = {};
                 if (typeof obj.limit !== 'undefined') {
                     t.limit(obj.limit);
                 }
+                if (typeof obj.searchFor !== 'undefined') {
+                    t.searchFor(obj.searchFor);
+                }
                 if (typeof obj.page !== 'undefined') {
                     t.page(obj.page);
                 }
@@ -671,6 +677,9 @@ var $AA = {};
                 } //format data
                 if (typeof obj.limit !== 'undefined') {
                     t.d.option.limit = obj.limit;
+                } //hány darab
+                if (typeof obj.searchFor !== 'undefined') {
+                    t.d.option.searchFor = obj.searchFor;
                 } //hány darab
                 if (typeof obj.page !== 'undefined') {
                     t.d.option.page = obj.page;
@@ -701,6 +710,9 @@ var $AA = {};
                 }
                 if (obj.limit !== false) {
                     data.limit = obj.limit;
+                }
+                if (obj.searchFor !== false) {
+                    data.searchFor = obj.searchFor;
                 }
                 if (obj.page !== false) {
                     data.page = obj.page;
@@ -925,7 +937,7 @@ var $AA = {};
                 return this.update.apply(this, [obj, id, true, true]);
             };
 
-        p.delete = p.delete || function (id, async) {
+        p.delete = p.delete || function (id, force, async) {
                 $AA.xhr[moduleNameLowerFirst + 'Modified'] = true;
                 $AA.xhr[moduleNameLowerFirst + 'GetAfterFirstModified'] = true;
                 var t = this;
@@ -934,12 +946,17 @@ var $AA = {};
                 } else {
                     var async = true;
                 }
+                var data = {};
+                if (typeof force !== 'undefined') {
+                    data.force = force;
+                }
 
                 t.d.xhr.delete = $.ajax({
                     url: $AA[moduleNameLowerFirst + 'Url']() + '/' + id + t.d.urlSuffix,
                     type: 'DELETE',
                     dataType: 'json',
                     async: async,
+                    data:data,
                     headers: {Authorization: 'Bearer ' + $AA.token().get()},
                     error: $AA.token().error()
                 }).done(function(){
@@ -952,7 +969,7 @@ var $AA = {};
             };
         p.deleteSync = p.deleteSync || function (id) {
                 var id = id || false;
-                return this.delete.apply(this, [id, false]);
+                return this.delete.apply(this, [id, true, false]);
             };
 
 
@@ -1098,6 +1115,14 @@ var $AA = {};
                     return t;
                 }
                 return t.d.option.limit;
+            };
+        p.searchFor = p.searchFor || function (searchFor) {
+                var t = this;
+                if (typeof searchFor !== 'undefined') {
+                    t.d.option.searchFor = searchFor;
+                    return t;
+                }
+                return t.d.option.searchFor;
             };
         p.format = p.format || function (format) {
                 var t = this;
@@ -4196,6 +4221,31 @@ var $AA = {};
         });
         return t.d.xhr.getNodesById;
     };
+    p.getNodeContacts = function(automationId, nodeId, limit, page, searchFor){
+        var t = this;
+        limit = limit || false;
+        page = page || false;
+        searchFor = searchFor || false;
+        var data = {};
+        if(limit !== false){
+            data.limit = limit;
+        }
+        if(page !== false){
+            data.page = page;
+        }
+        if(searchFor !== false){
+            data.searchFor = searchFor;
+        }
+        return $.ajax({
+            url: t.url() + '/' + automationId + '/nodes/' + nodeId + '/contacts',
+            type: 'GET',
+            dataType: 'json',
+            data:data,
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+
     /*
     p.acceptDraft = function(automationId){
         var t = this;
@@ -4436,6 +4486,136 @@ var $AA = {};
     
     $AA.initBasicFunctions(Segments, "Segments2", {
         url:'v2/segments',
+        useBaseUrl:true
+    });
+
+})();
+
+(function(){
+    var SmartLists = function (obj) {
+        var t = this;
+        t.d = {
+            hasEmbedded:false,
+            parentName:'smartLists'
+        };
+        t.init();
+
+        t.initParameter(obj || {});
+    };
+
+    var p = SmartLists.prototype;
+
+    p.getContactsById = function(smartListId, limit, page, searchFor){
+        var t = this;
+        limit = limit || false;
+        page = page || false;
+        searchFor = searchFor || false;
+        var data = {};
+        if(limit !== false){
+            data.limit = limit;
+        }
+        if(page !== false){
+            data.page = page;
+        }
+        if(searchFor !== false){
+            data.searchFor = searchFor;
+        }
+        return $.ajax({
+            url: t.url() + '/'+smartListId+'/contacts',
+            type: 'GET',
+            dataType: 'json',
+            data:data,
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+
+    p.getPermanentlyRemovedCount = function(smartListId, contactIds, selectorType, searchFor, filter){
+        var t = this;
+        smartListId = smartListId || false;
+        contactIds = contactIds || [];
+        selectorType = selectorType || 'select';
+        searchFor = searchFor || false;
+        filter = filter || false;
+        var data = {};
+        if(smartListId === false){
+            return false;
+        }
+        data.selector = {
+            type:selectorType,
+            selection:contactIds
+        };
+        if(searchFor !== false){
+            data.searchFor = searchFor;
+        }
+        if(filter !== false){
+            data.filter = filter;
+        }
+        return $.ajax({
+            url: t.url() + '/'+smartListId+'/contacts/permanently-remove-count',
+            type: 'POST',
+            dataType: 'json',
+            data:JSON.stringify(data),
+            contentType:'application/json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+
+    p.deleteContacts = function(smartListId, contactIds, selectorType, searchFor, filter){
+        var t = this;
+        smartListId = smartListId || false;
+        contactIds = contactIds || [];
+        selectorType = selectorType || 'select';
+        searchFor = searchFor || false;
+        filter = filter || false;
+        var data = {};
+        if(smartListId === false){
+            return false;
+        }
+        data.selector = {
+            type:selectorType,
+            selection:contactIds
+        };
+        if(searchFor !== false){
+            data.searchFor = searchFor;
+        }
+        if(filter !== false){
+            data.filter = filter;
+        }
+        return $.ajax({
+            url: t.url() + '/'+smartListId+'/contacts/remove',
+            type: 'POST',
+            dataType: 'json',
+            data:JSON.stringify(data),
+            contentType:'application/json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+    /*
+    p.deleteContact = function(smartListId, contactId, force){
+        var t = this;
+        smartListId = smartListId || false;
+        contactId = contactId || false;
+        force = force || false;
+        if(smartListId === false || contactId === false){
+            return false;
+        }
+        var data = {};
+        data.force = force;
+        return $.ajax({
+            url: t.url() + '/'+smartListId+'/contacts/' + contactId,
+            type: 'DELETE',
+            data:data,
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+    */
+    
+    $AA.initBasicFunctions(SmartLists, "SmartLists", {
+        url:'v2/smart-lists',
         useBaseUrl:true
     });
 
