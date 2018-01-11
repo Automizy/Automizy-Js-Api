@@ -630,6 +630,9 @@ var $AA = {};
                 if (typeof t.d.parentName === 'undefined') {
                     t.d.parentName = moduleNameLowerFirst;
                 }
+                if (typeof t.d.customParameters === 'undefined') {
+                    t.d.customParameters = {};
+                }
             };
         p.initParameter = p.initParameter || function (obj) {
                 var t = this;
@@ -666,6 +669,9 @@ var $AA = {};
                 if (typeof obj.links !== 'undefined') {
                     t.links(obj.links);
                 }
+                if (typeof obj.customParameters !== 'undefined') {
+                    t.customParameters(obj.customParameters);
+                }
             };
 
         p.setOptions = p.setOptions || function (obj) {
@@ -699,6 +705,9 @@ var $AA = {};
                 if (typeof obj.links !== 'undefined') {
                     t.d.option.links = obj.links;
                 } //milyen linkek kellenek vesszővel
+                if (typeof obj.customParameters !== 'undefined') {
+                    t.d.option.customParameters = obj.customParameters;
+                }
             };
         p.getDataFromParameter = p.getDataFromParameter || function (obj) {
                 var data = {};
@@ -732,6 +741,9 @@ var $AA = {};
                 if (obj.links !== false) {
                     data.links = obj.links;
                 }
+                if (obj.customParameters !== false) {
+                    data.customParameters = obj.customParameters;
+                }
                 return data;
             };
 
@@ -764,6 +776,11 @@ var $AA = {};
 
                 if (typeof data.order === 'undefined' && typeof data.order_by !== 'undefined') {
                     data.order = data.order_by + ':' + data.order_dir || 'asc'
+                }
+
+                var customParameters = t.customParameters();
+                for(var i in customParameters){
+                    data[i] = customParameters[i];
                 }
 
                 t.d.xhr.get = $.ajax({
@@ -1119,6 +1136,9 @@ var $AA = {};
         p.searchFor = p.searchFor || function (searchFor) {
                 var t = this;
                 if (typeof searchFor !== 'undefined') {
+                    if(searchFor === ''){
+                        searchFor = false;
+                    }
                     t.d.option.searchFor = searchFor;
                     return t;
                 }
@@ -1202,6 +1222,22 @@ var $AA = {};
                     return t;
                 }
                 return t.d.option.set;
+            };
+        p.customParameters =  p.customParameters || function (key, value) {
+                var t = this;
+                if (typeof key !== 'undefined' && typeof value !== 'undefined') {
+                    t.d.customParameters = {};
+                    t.d.customParameters[key] = value;
+                    return t;
+                }
+                if (typeof key === 'object' || typeof key === 'array') {
+                    t.d.customParameters = {};
+                    for (var i in key) {
+                        t.d.customParameters[i] = key[i];
+                    }
+                    return t;
+                }
+                return t.d.customParameters;
             };
         p.url = p.url || function () {
                 return $AA[moduleNameLowerFirst + 'Url'].apply(this, arguments);
