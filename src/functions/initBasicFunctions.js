@@ -413,12 +413,14 @@ define([
                     var async = true;
                 }
                 var data = {};
+                var url = $AA[moduleNameLowerFirst + 'Url']() + '/' + id;
+
                 if (typeof force !== 'undefined') {
-                    data.force = force;
+                    url += '?force=true';
                 }
 
                 t.d.xhr.delete = $.ajax({
-                    url: $AA[moduleNameLowerFirst + 'Url']() + '/' + id + t.d.urlSuffix,
+                    url: url,
                     type: 'DELETE',
                     dataType: 'json',
                     async: async,
