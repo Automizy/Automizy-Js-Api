@@ -4749,7 +4749,7 @@ var $AA = {};
             dataType: 'json',
             data:JSON.stringify({
                 name:name,
-                criterion:criteria.criterion
+                criterion:criteria.criterion || criteria
             }),
             contentType:'application/json',
             headers: {Authorization: 'Bearer ' + $AA.token().get()},
@@ -4764,7 +4764,7 @@ var $AA = {};
             type: 'PATCH',
             dataType: 'json',
             data:JSON.stringify({
-                criterion:criteria.criterion
+                criterion:criteria.criterion || criteria
             }),
             contentType:'application/json',
             headers: {Authorization: 'Bearer ' + $AA.token().get()},
@@ -4782,6 +4782,16 @@ var $AA = {};
                 name:name
             }),
             contentType:'application/json',
+            headers: {Authorization: 'Bearer ' + $AA.token().get()},
+            error: $AA.token().error()
+        });
+    };
+
+    p.deleteFilterById = function(smartListId, filterId){
+        var t = this;
+        return $.ajax({
+            url: t.url() + '/'+smartListId+'/filters/'+filterId,
+            type: 'DELETE',
             headers: {Authorization: 'Bearer ' + $AA.token().get()},
             error: $AA.token().error()
         });
